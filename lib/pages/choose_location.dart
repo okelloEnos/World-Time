@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:world_time/Service/World_time.dart';
 
 class ChooseLocation extends StatefulWidget {
   @override
@@ -7,15 +8,33 @@ class ChooseLocation extends StatefulWidget {
 
 class _ChooseLocationState extends State<ChooseLocation> {
 
-  void getData(){
-    Future.delayed(Duration(seconds: 3),() {
-      print('OKELLO');
+  List<WorldTime> locations = [
+    WorldTime(url: 'Europe/London', location: 'London', flag: 'uk.png'),
+    WorldTime(url: 'Europe/Berlin', location: 'Athens', flag: 'greece.png'),
+    WorldTime(url: 'Africa/Cairo', location: 'Cairo', flag: 'egypt.png'),
+    WorldTime(url: 'Africa/Nairobi', location: 'Nairobi', flag: 'kenya.png'),
+    WorldTime(url: 'America/Chicago', location: 'Chicago', flag: 'usa.png'),
+    WorldTime(url: 'America/New_York', location: 'New York', flag: 'usa.png'),
+    WorldTime(url: 'Asia/Seoul', location: 'Seoul', flag: 'south_korea.png'),
+    WorldTime(url: 'Asia/Jakarta', location: 'Jakarta', flag: 'indonesia.png'),
+  ];
+
+  void updateLocation(index) async{
+    WorldTime clickedLocation = locations[index];
+    await clickedLocation.getTime();
+
+  //  navigate to home screen
+    Navigator.pop(context, {
+      'location' : clickedLocation.location,
+      'flag' : clickedLocation.flag,
+      'time' : clickedLocation.time,
+      'isDayTime' : clickedLocation.isDayTime,
     });
   }
+
   @override
   void initState() {
     super.initState();
-    getData();
   }
 
   @override
@@ -28,7 +47,27 @@ class _ChooseLocationState extends State<ChooseLocation> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Text("Choosing Location Screen"),
+      body: ListView.builder(
+          itemCount: locations.length,
+          itemBuilder: (context, index){
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 4.0),
+              child: Card(
+                child: ListTile(
+                  onTap: () {
+                    updateLocation(index);
+                  },
+                  title: Text(
+                    locations[index].location,
+                  ),
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage('assets/${locations[index].flag}'),
+                  ),
+                ),
+              ),
+            );
+          }
+      )
     );
   }
 
